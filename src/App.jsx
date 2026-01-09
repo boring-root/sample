@@ -6,7 +6,7 @@ import './App.css'
 const App = () => {
   return (
     <div>
-     <h1>I am iron man!!!</h1>
+     <h1>I am iron!</h1>
     </div>
   )
 }
