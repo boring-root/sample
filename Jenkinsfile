@@ -9,7 +9,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/Afreed7411/ci-cd-pipeline.git'
+                git branch: 'main', url:  'https://github.com/boring-root/sample.git'
             }
         }
 
