@@ -1,23 +1,52 @@
 pipeline {
     agent any
 
+    triggers {
+        githubPush()
+    }
+
     stages {
-        stage('Checkout') {
+
+        stage('Checkout Code') {
             steps {
-                git url: 'https://github.com/boring-root/sample.git', branch: 'main'
+                git branch: 'main', url: 'https://github.com/Afreed7411/ci-cd-pipeline.git'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Build Docker Image') {
             steps {
-                bat 'npm install'
+                bat 'docker build --no-cache -t vite-app .'
             }
         }
 
-        stage('Build') {
+        stage('Deploy Application') {
             steps {
-                bat 'npm run build'
+                bat '''
+                docker stop vite-container || echo Container not running
+                docker rm vite-container || echo Container not found
+                docker run -d -p 8081:80 --name vite-container vite-app
+                '''
             }
+        }
+
+        stage('Test Application') {
+            steps {
+                bat '''
+                echo Waiting for app to start...
+                timeout /t 5 /nobreak > nul
+
+                curl -f http://localhost:8081 || exit /b 1
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'CI/CD Pipeline executed successfully '
+        }
+        failure {
+            echo 'CI/CD Pipeline failed '
         }
     }
 }
